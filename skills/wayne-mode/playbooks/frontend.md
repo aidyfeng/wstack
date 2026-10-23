@@ -1,16 +1,23 @@
-# 前端交付物
+# 网页与 App
 
-先看页面给谁用，再选技能。不要把用户应用写回 Next.js。
+先看页面给谁用，再选技能。用户应用的网页版、安卓、iOS 是同一个 Expo 工程，不写进 Next.js。
+
+## 网页
 
 | 页面 | 应用 | 技能 |
 | --- | --- | --- |
-| 官网、公开协议、旧用户 URL 重定向 | `ui/apps/site`（Next.js） | 无专篇。只改这个站点，不要套用户应用的技能 |
-| 登录、设置、会员，以及其余用户页面，含浏览器里的网页版 | `ui/apps/mobile`（Expo Router，iOS / Android / Web） | `standard-react-native-app` |
+| 官网、公开协议、旧用户 URL 重定向 | `ui/apps/site`（Next.js） | 无专篇。只改这个站点 |
+| 用户页面在浏览器里的网页版 | `ui/apps/mobile` | `standard-react-native-app` |
 | 运营后台 | `ui/apps/admin` | `standard-react-ops-console` |
-| 微信小程序 | `ui/apps/client` | `standard-taro-miniprogram` |
 
-网页版、安卓、iOS 是 `ui/apps/mobile` 这一个 Expo 工程，部署到 `app.example.com`。不要写成 Next 的 `(app)` 区。
+`pnpm web` 在浏览器打开用户应用的网页版，部署到 `app.example.com`。官网继续留在 `ui/apps/site`。
 
-`pnpm web` 在浏览器打开网页版。`pnpm start` 给安卓和 iOS 用。本仓库有 `expo-dev-client`，手机装 Development Build，应用商店里的 Expo Go 打不开。没有这个依赖的项目才用 Expo Go 同时扫安卓和 iOS。
+四端通用的 React 写法（React Query、不设全局 store）用 `standard-react-conventions`。包放共享目录还是留在 app 里，用 `standard-frontend-monorepo`。
 
-四端都适用的 React 写法（React Query、不要全局 store）见 `standard-react-conventions`。跨 app 的包边界见 `standard-frontend-monorepo`。
+## App
+
+用户应用的 iOS、Android 和网页版都在 `ui/apps/mobile`（Expo Router）。技能是 `standard-react-native-app`。
+
+`pnpm start` 给安卓和 iOS。本仓库有 `expo-dev-client`，手机装 Development Build，应用商店里的 Expo Go 打不开。没有这个依赖的项目才用 Expo Go 同时扫安卓和 iOS。
+
+微信小程序不是这个 App。它在 `ui/apps/client`，技能是 `standard-taro-miniprogram`。小程序只出微信，不拿它的 H5 产物当网页版。
