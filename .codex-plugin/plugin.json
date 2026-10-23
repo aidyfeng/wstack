@@ -14,6 +14,8 @@
     "longDescription": "把 standard skills 一次装进 Codex。用哪条规范由 wayne-mode 的 Playbook 决定。",
     "developerName": "ZHIRONG",
     "category": "Developer Tools",
+    "logo": "./assets/logo.jpg",
+    "composerIcon": "./assets/logo.jpg",
     "capabilities": ["Instructions"],
     "defaultPrompt": [
       "按 standard-dev-workflow 写这次提交说明",

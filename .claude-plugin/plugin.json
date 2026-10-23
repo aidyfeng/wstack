@@ -6,5 +6,6 @@
     "name": "ZHIRONG"
   },
   "license": "UNLICENSED",
+  "logo": "assets/logo.jpg",
   "keywords": ["skills", "standards", "fastapi", "react", "nextjs"]
 }
