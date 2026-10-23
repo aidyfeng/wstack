@@ -1,0 +1,11 @@
+{
+  "name": "wstack",
+  "version": "0.1.0",
+  "description": "ZHIRONG 的 standard skills：后端、前端、移动端、支付、安全与工程流程规范，装到项目或个人 agent 上按需调用。",
+  "author": {
+    "name": "ZHIRONG"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["skills", "standards", "fastapi", "react", "nextjs"],
+  "skills": "./skills/"
+}

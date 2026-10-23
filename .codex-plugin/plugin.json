@@ -1,0 +1,24 @@
+{
+  "name": "wstack",
+  "version": "0.1.0",
+  "description": "ZHIRONG 的 standard skills：后端、前端、移动端、支付、安全与工程流程规范，装到项目或个人 agent 上按需调用。",
+  "author": {
+    "name": "ZHIRONG"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["skills", "standards", "fastapi", "react", "nextjs"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "wstack",
+    "shortDescription": "个人工程规范 skills",
+    "longDescription": "把 standard skills 一次装进 Codex。用哪条规范由 wayne-mode 的 Playbook 决定。",
+    "developerName": "ZHIRONG",
+    "category": "Developer Tools",
+    "capabilities": ["Instructions"],
+    "defaultPrompt": [
+      "按 standard-dev-workflow 写这次提交说明",
+      "这个接口按 standard-api-security-baseline 查一遍",
+      "新页面按 standard-react-conventions 来"
+    ]
+  }
+}

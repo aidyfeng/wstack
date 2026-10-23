@@ -1,0 +1,19 @@
+{
+  "name": "wstack",
+  "description": "ZHIRONG 的 standard skills。",
+  "owner": {
+    "name": "ZHIRONG"
+  },
+  "plugins": [
+    {
+      "name": "wstack",
+      "description": "后端、前端、移动端、支付、安全与工程流程规范。",
+      "category": "development",
+      "source": {
+        "type": "local",
+        "path": "./"
+      },
+      "keywords": ["skills", "standards"]
+    }
+  ]
+}

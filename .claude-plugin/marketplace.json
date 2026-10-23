@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "wstack",
+  "description": "ZHIRONG 的 standard skills。",
+  "owner": {
+    "name": "ZHIRONG"
+  },
+  "plugins": [
+    {
+      "name": "wstack",
+      "description": "后端、前端、移动端、支付、安全与工程流程规范。",
+      "source": "./",
+      "category": "development",
+      "version": "0.1.0",
+      "author": {
+        "name": "ZHIRONG"
+      }
+    }
+  ]
+}
