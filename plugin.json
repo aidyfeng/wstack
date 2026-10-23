@@ -6,7 +6,7 @@
   "author": {
     "name": "ZHIRONG"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": ["skills", "standards", "fastapi", "react", "nextjs"],
   "skills": "./skills/"
 }

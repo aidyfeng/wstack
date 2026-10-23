@@ -6,7 +6,7 @@
   "author": {
     "name": "ZHIRONG"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "logo": "assets/logo.jpg",
   "keywords": ["skills", "standards", "fastapi", "react", "nextjs"],
   "category": "developer-tools",
