@@ -1,7 +1,7 @@
 ---
 name: wayne-mode
 description: >
-  决定这次任务用哪条 standard skill。拿不准适用性、做登录，或要分清官网、用户应用、后台、小程序时先读本技能，按 playbooks/ 选。
+  决定这次任务用哪条 standard skill。拿不准适用性、做登录、配置质量门，或要分清官网、用户应用、后台、小程序时先读本技能，按 playbooks/ 选。
 ---
 
 # wayne-mode
@@ -14,6 +14,7 @@ description: >
 | --- | --- |
 | 登录、注册、会话、谁签发 token | [login](playbooks/login.md) |
 | 页面属于官网、用户应用、后台还是小程序 | [frontend](playbooks/frontend.md) |
+| lint、类型检查、CI 门禁、验证范围与交付证据 | [quality](playbooks/quality.md) |
 | FastAPI 路由、用例、DDD 分层 | `standard-fastapi-ddd-backend` |
 | SQLAlchemy、Repository、迁移、软删除 | `standard-sqlalchemy-persistence` |
 | Redis key、缓存、限流、幂等 | `standard-redis-patterns` |

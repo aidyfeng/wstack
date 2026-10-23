@@ -4,6 +4,8 @@
 
 改规范只改这个仓库里的 `skills/`。`~/.agents/skills/standard-*` 是装插件之前的副本，两边会分叉。
 
+质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。pstack 未随本插件安装；标准中的官方链接是参考资料，调用其技能前须确认当前会话可用。
+
 ## 安装
 
 把下面的路径换成这个仓库的路径，或换成推上去之后的 `owner/repo`。个人安装对所有项目生效；项目安装只对那一个仓库生效。
@@ -71,6 +73,7 @@ enabled = ["wstack"]
 | `standard-multi-provider-auth` | 大陆多渠道登录：手机号主身份、provider 抽象 |
 | `standard-multitenant-isolation` | 多租户隔离：每条查询带租户过滤 |
 | `standard-payment-integration` | 支付通道：幂等、回调验签、查单对账 |
+| `standard-quality-gates` | lint、类型与构建检查、CI 门禁、行为证据与 pstack 依赖 |
 | `standard-react-conventions` | 四端通用 React：状态、React Query、API 客户端 |
 | `standard-react-native-app` | Expo 用户应用，含 iOS、Android 和网页版 |
 | `standard-react-ops-console` | 运营后台 React SPA，与用户前端分开部署 |
