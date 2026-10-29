@@ -8,7 +8,9 @@ description: >-
 
 # wayne-mode
 
-行为按当前会话里的 poteto-mode。本插件不包含 pstack。会话里看不见 poteto-mode，就说明，然后按下面的表继续。
+行为按 poteto-mode。本插件不包含 pstack。
+
+会话上下文里已经有 poteto-mode 的 SKILL.md 时，直接按其做。宣布没有之前，先读已安装 pstack 插件里的 `skills/poteto-mode/SKILL.md`（与 `setup-pstack` 同一个 `skills/` 目录）。读到了就按其做。只有这次读取失败，才说明当前会话没有 poteto-mode，然后按下面的表继续。
 
 适用性只在这里定。各 standard skill 只写做法。不要查 `project-map`，也不要读 `project-bindings.md`。
 

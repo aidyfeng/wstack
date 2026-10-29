@@ -4,7 +4,7 @@
 
 改规范只改这个仓库里的 `skills/`。`~/.agents/skills/standard-*` 是装插件之前的副本，两边会分叉。
 
-质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。行为按当前会话的 poteto-mode。pstack 未随本插件安装。会话里看不见就说明，并按 standard skill 继续。质量门里的官方链接仍是参考，调用前确认技能可用。
+质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。行为按 poteto-mode。pstack 未随本插件安装。会话里已有其 SKILL.md 就直接用；宣布没有之前，先读已安装 pstack 插件里的 `skills/poteto-mode/SKILL.md`。只有读取失败才说明没有，并按 standard skill 继续。质量门里的官方链接仍是参考，调用前确认技能可用。
 
 ## 安装
 
