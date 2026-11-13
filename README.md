@@ -8,6 +8,22 @@
 
 完整步骤见 [安装与卸载指南](install.MD)：包含 Claude Code、Codex、Cursor、Grok Build 的安装与卸载，以及其他兼容 Agent 的 Skills CLI 安装方法、个人与项目范围选择和卸载后检查。安装来源统一为 GitHub 仓库 `aidyfeng/wstack`。
 
+## wayne-mode 自动启用
+
+Claude Code 和 Codex 插件通过 `SessionStart` 默认开启 wayne-mode，直接注入 [SKILL.md](skills/wayne-mode/SKILL.md) 的实际正文；规则只维护这一份。恢复会话或压缩上下文后，按当前会话状态重新注入。需要 Python 3 在客户端的非交互环境 `PATH` 上，并允许插件运行 hook。
+
+| 会话消息 | 效果 |
+| --- | --- |
+| `/wayne-mode on` | 当前会话开启 |
+| `/wayne-mode off` | 当前会话关闭 |
+| `/wayne-mode status` | 查看当前会话状态和新会话默认值 |
+| `/wayne-mode default on` | 后续新会话默认开启，当前会话不变 |
+| `/wayne-mode default off` | 后续新会话默认关闭，当前会话不变 |
+
+Claude Code 插件使用 `/wstack:wayne-mode on` 等带命名空间的入口。Codex 的输入框会拦截未知斜杠命令，请在上述消息前加一个空格，作为普通消息发送；hook 会识别命令。这里只接受单独一行的控制消息，代码块、解释文字和夹带任务的消息不会改变状态。
+
+Cursor、Grok Build 和仅用 Skills CLI 安装的客户端保留按需技能加载，不注册自动开关。客户端限制、状态路径、故障处理及卸载清理见[开关说明](install.MD#wayne-mode-自动启用与开关)。`off` 停止自动应用本插件规则，无法删除历史上下文，也不会关闭用户、项目或 P Stack 的独立规范。
+
 ## 技能
 
 | skill | 何时用 |
@@ -33,4 +49,4 @@
 | `standard-web-crawler` | 爬虫：去重、边界、robots、重试、增量 |
 | `standard-websocket-realtime` | WebSocket：频道、心跳、重连、多进程广播 |
 
-检查清单是否完整：`python3 scripts/check.py`。
+检查技能清单：`python3 scripts/check.py`；检查开关行为：`python3 -m unittest discover -s scripts -p 'test_wayne_mode.py'`。

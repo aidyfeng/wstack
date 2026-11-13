@@ -7,5 +7,6 @@
   },
   "license": "MIT",
   "logo": "assets/logo.jpg",
-  "keywords": ["skills", "standards", "fastapi", "react", "nextjs"]
+  "keywords": ["skills", "standards", "fastapi", "react", "nextjs"],
+  "hooks": "./hooks/claude.json"
 }
