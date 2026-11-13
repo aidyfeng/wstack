@@ -1,62 +1,12 @@
-# wstack
+基于 poteto（Lauren Tan）的 [P Stack（pstack）](https://github.com/cursor/plugins/tree/main/pstack) 封装的个人工程规范插件。P Stack 提供工作流与行为原则，wstack 在此基础上补充领域规范，`skills/wayne-mode` 按 Playbook 决定用哪条规范。登录只在自行托管 cookie 会话时用 `standard-api-security-baseline`；Vercel 或 Supabase 登录不用它。其余规范仍是通用条款，项目路径不在本插件里。
 
-个人工程规范，打成一个插件。`skills/wayne-mode` 按 Playbook 决定用哪条规范。登录只在自行托管 cookie 会话时用 `standard-api-security-baseline`；Vercel 或 Supabase 登录不用它。其余规范仍是通用条款，项目路径不在本插件里。
+质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。行为按 poteto-mode。本插件不包含 pstack；会话里已有其 `SKILL.md` 就直接用，宣布没有之前先读已安装 pstack 插件里的 `skills/poteto-mode/SKILL.md`，只有读取失败才按 standard skill 继续。
 
-改规范只改这个仓库里的 `skills/`。`~/.agents/skills/standard-*` 是装插件之前的副本，两边会分叉。
+## 安装与卸载
 
-质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。行为按 poteto-mode。pstack 未随本插件安装。会话里已有其 SKILL.md 就直接用；宣布没有之前，先读已安装 pstack 插件里的 `skills/poteto-mode/SKILL.md`。只有读取失败才说明没有，并按 standard skill 继续。质量门里的官方链接仍是参考，调用前确认技能可用。
+**先在当前客户端安装 P Stack，再安装 wstack。** 本插件不包含或自动安装 P Stack。
 
-## 安装
-
-把下面的路径换成这个仓库的路径，或换成推上去之后的 `owner/repo`。个人安装对所有项目生效；项目安装只对那一个仓库生效。
-
-### Claude Code
-
-```bash
-# 个人
-claude plugin marketplace add /path/to/wstack --scope user
-claude plugin install wstack@wstack --scope user
-
-# 某一个项目（在该项目目录里执行）
-claude plugin marketplace add /path/to/wstack --scope project
-claude plugin install wstack@wstack --scope project
-```
-
-会话里等价于 `/plugin marketplace add` 然后 `/plugin install wstack@wstack`。
-
-### Codex
-
-个人（所有项目都能用）：
-
-```bash
-codex plugin marketplace add /path/to/wstack
-codex plugin add wstack@wstack
-```
-
-只给某一个项目：在该仓库把本插件链到 `plugins/wstack`，并写入 `.agents/plugins/marketplace.json`，`source.path` 用 `./plugins/wstack`（相对该仓库根，不是本文件里的 `"."`）。然后在该仓库里执行 `codex plugin add wstack@wstack`。
-
-### Cursor
-
-推到 Git 之后，在 Customize 里把这个仓库加为 marketplace，安装 `wstack` 时选 **user** 或 **project**。
-
-还没推远程、只在这台机器上用：把本仓库**复制**到 `~/.cursor/plugins/local/wstack`（Cursor 不加载指向仓库外的符号链接），然后 Reload Window。这是用户范围。项目范围走上面的 marketplace 安装。
-
-### Grok
-
-个人：
-
-```bash
-grok plugin install /path/to/wstack --trust
-```
-
-装完默认是关的。在 `~/.grok/config.toml` 里打开：
-
-```toml
-[plugins]
-enabled = ["wstack"]
-```
-
-某一个项目：把本仓库放到该项目的 `.grok/plugins/wstack`（项目插件需要 trust）。
+完整步骤见 [安装与卸载指南](install.MD)：包含 Claude Code、Codex、Cursor、Grok Build 的安装与卸载，以及其他兼容 Agent 的 Skills CLI 安装方法、个人与项目范围选择和卸载后检查。安装来源统一为 GitHub 仓库 `aidyfeng/wstack`。
 
 ## 技能
 
