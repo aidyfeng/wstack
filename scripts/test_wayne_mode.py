@@ -118,8 +118,7 @@ class HookTests(unittest.TestCase):
             self.assertEqual(mod.state_dir(), Path('/home/test/Library/Application Support/wstack/wayne-mode'))
         with patch.object(mod.sys, 'platform', 'win32'), patch.dict(os.environ, {'APPDATA': '/appdata'}):
             self.assertEqual(mod.state_dir(), Path('/appdata/wstack/wayne-mode'))
-        root_manifest = json.loads((ROOT / 'plugin.json').read_text(encoding='utf-8'))
-        self.assertNotIn('com.openai', root_manifest.get('extensions', {}))
+        self.assertFalse((ROOT / 'plugin.json').exists(), 'Codex CLI 0.170.0 优先读取包根 Agent Plugins 清单，并跳过插件 hook')
         interface = json.loads((ROOT / '.codex-plugin/plugin.json').read_text(encoding='utf-8'))['interface']
         self.assertEqual(interface['displayName'], 'wstack')
         self.assertEqual(interface['logo'], './assets/logo.jpg')

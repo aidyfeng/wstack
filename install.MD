@@ -176,6 +176,8 @@ codex plugin add wstack@wstack
 
 安装后在 `/plugins` 中确认 `wstack` 已安装并启用，打开 `/hooks` 审查并信任它的 `SessionStart`、`UserPromptSubmit` hook，再开启新会话。如果使用桌面端，重启应用后检查插件列表。hooks 被客户端或管理员关闭时自动开关无效；按[开关说明](#wayne-mode-自动启用与开关)发送带前导空格的状态消息检查。
 
+已安装 `0.1.0` 的 Codex CLI 用户可运行 `codex plugin marketplace upgrade wstack` 刷新 GitHub 来源，再运行 `codex plugin add wstack@wstack` 安装 `0.1.1`。Codex CLI `0.170.0` 会优先读取包根的 Agent Plugins 清单，并跳过该格式的插件 hook。修复版通过 `.codex-plugin/plugin.json` 注册这两个 hook。
+
 只希望当前项目使用技能时，可选择下方 [Skills CLI](#其他-agentskills-cli)，使用 `--agent codex` 且不加 `--global`。
 
 ### 卸载
