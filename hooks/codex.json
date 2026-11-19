@@ -7,6 +7,7 @@
             "type": "command",
             "command": "python3 -X utf8 -c \"import os,runpy;runpy.run_path(os.path.join(os.environ.get('PLUGIN_ROOT') or os.environ['CLAUDE_PLUGIN_ROOT'],'hooks','wayne_mode.py'),run_name='__main__')\" codex",
             "timeout": 5,
+            "statusMessage": "Loading wayne-mode...",
             "commandWindows": "py -3 -X utf8 -c \"import os,runpy;runpy.run_path(os.path.join(os.environ.get('PLUGIN_ROOT') or os.environ['CLAUDE_PLUGIN_ROOT'],'hooks','wayne_mode.py'),run_name='__main__')\" codex",
             "additionalContextLimit": 8000
           }
@@ -20,6 +21,7 @@
             "type": "command",
             "command": "python3 -X utf8 -c \"import os,runpy;runpy.run_path(os.path.join(os.environ.get('PLUGIN_ROOT') or os.environ['CLAUDE_PLUGIN_ROOT'],'hooks','wayne_mode.py'),run_name='__main__')\" codex",
             "timeout": 5,
+            "statusMessage": "Tracking wayne-mode...",
             "commandWindows": "py -3 -X utf8 -c \"import os,runpy;runpy.run_path(os.path.join(os.environ.get('PLUGIN_ROOT') or os.environ['CLAUDE_PLUGIN_ROOT'],'hooks','wayne_mode.py'),run_name='__main__')\" codex",
             "additionalContextLimit": 8000
           }

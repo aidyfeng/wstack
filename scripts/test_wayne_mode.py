@@ -139,6 +139,7 @@ class HookTests(unittest.TestCase):
                 if client == 'codex':
                     self.assertEqual(hook['additionalContextLimit'], 8000)
                     self.assertIn('py -3', hook['commandWindows'])
+                    self.assertEqual(hook['statusMessage'], {'SessionStart': 'Loading wayne-mode...', 'UserPromptSubmit': 'Tracking wayne-mode...'}[event])
 
 
 if __name__ == '__main__':
