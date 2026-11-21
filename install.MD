@@ -6,6 +6,7 @@
 | --- | --- |
 | [Claude Code](#claude-code) | GitHub marketplace，支持个人或项目范围 |
 | [Codex](#codex) | GitHub marketplace；项目范围也可使用 Skills CLI |
+| [Antigravity (agy)](#antigravity-agy) | 直接从 GitHub 或本地目录安装插件 |
 | [Cursor](#cursor) | 从 GitHub 克隆到个人插件目录；项目范围可使用 Skills CLI |
 | [Grok Build](#grok-build) | 直接从 GitHub 安装插件 |
 | [其他 Agent](#其他-agentskills-cli) | 使用 Skills CLI 选择客户端并安装技能 |
@@ -36,6 +37,14 @@ wstack 基于 poteto（Lauren Tan）的 P Stack 封装领域规范，不包含�
 
 安装后运行 `/pstack:setup-pstack`。
 
+**Antigravity (agy)**：在终端直接从 `cursor/plugins` 仓库的 `pstack` 子目录安装（或在会话中执行 `/plugin install https://github.com/cursor/plugins/tree/main/pstack`）：
+
+```bash
+agy plugin install https://github.com/cursor/plugins/tree/main/pstack
+```
+
+若本机已在 Claude Code 中安装过 `pstack`，也可运行 `agy plugin import claude` 导入。`pstack` 中的 `agents/poteto-agent.md` 声明了 Cursor 专属模型名，Antigravity 加载器会自动跳过该 agent 并正常加载全部 58 个技能（含 `poteto-mode`）。
+
 **其他客户端**：先按 [P Stack 上游说明](https://github.com/cursor/plugins/blob/main/pstack/README.md#install) 确认是否有对应适配，并完成安装。仅复制技能不代表已适配上游依赖的工具、模型分工和客户端能力。
 
 开启新会话，确认能发现 `poteto-mode` 和任务所需的 P Stack 技能，再使用 wstack。缺少适配时可以独立使用 standard skill，但完整工作流的前置依赖尚未满足。
@@ -44,17 +53,18 @@ wstack 基于 poteto（Lauren Tan）的 P Stack 封装领域规范，不包含�
 
 ### 支持范围与前提
 
-本次协议核对日期为 2026-11-13。Claude Code 和 Codex 插件通过 `SessionStart` 注入 `skills/wayne-mode/SKILL.md` 的实际正文及技能目录，通过 `UserPromptSubmit` 识别控制消息、更新状态并追加上下文。不会复制规则到第二份文件，也不会只提示模型自行加载技能。Playbook 和 standard skill 仍按正文中的路由按需读取。
+本次协议核对日期为 2026-11-21。Claude Code 和 Codex 插件通过 `SessionStart` 注入 `skills/wayne-mode/SKILL.md` 的实际正文及技能目录，通过 `UserPromptSubmit` 识别控制消息、更新状态并追加上下文；Antigravity (`agy`) 插件通过 `.antigravity-plugin/plugin.json` 与包根 `hooks.json` 注册 `SessionStart` 和 `PreInvocation`（仅在每轮首次模型调用 `invocationNum == 0` 时执行，工具循环续跑不重复注入）。不会复制规则到第二份文件，也不会只提示模型自行加载技能。Playbook 和 standard skill 仍按正文中的路由按需读取。
 
 | 客户端 / 安装方式 | 本仓库的自动开关支持 |
 | --- | --- |
 | Claude Code 插件 | 支持；恢复及压缩后的 `SessionStart` 按会话状态重新注入 |
 | Codex 插件 | 支持；须允许 hooks 并审查、信任插件 hook；恢复及压缩后保持会话状态 |
+| Antigravity (`agy`) 插件 | 支持；通过 `SessionStart` 与 `PreInvocation` 注入并持久化会话状态 |
 | Cursor 插件 | 保留按需技能；不注册自动开关 |
 | Grok Build 插件 | 保留按需技能；这两个事件不支持所需的上下文注入 |
 | 仅 Skills CLI 或手动复制技能 | 只安装技能，不注册 hook，不提供自动开关 |
 
-运行时使用已有 Python 3 标准库，无第三方包。Linux、macOS 及 Claude Code 的 Windows 环境需要 `python3` 能从客户端非交互环境的 `PATH` 调用；Codex 的 Windows hook 使用 Python 3 启动器 `py -3`。先在客户端实际使用的终端确认运行时可用。缺少运行时、未信任 hook、客户端禁用 hooks 或版本不支持这些事件时，自动开关不会运行，技能仍可按需加载。
+运行时使用已有 Python 3 标准库，无第三方包。Linux、macOS 以及 Claude Code、Antigravity (`agy`) 的 Windows 环境需要 `python3` 能从客户端非交互环境的 `PATH` 调用；Codex 的 Windows hook 使用 Python 3 启动器 `py -3`。先在客户端实际使用的终端确认运行时可用。缺少运行时、未信任 hook、客户端禁用 hooks 或版本不支持这些事件时，自动开关不会运行，技能仍可按需加载。
 
 Cursor 的原生事件为 `sessionStart`、`beforeSubmitPrompt`、`preCompact`，不能直接使用 Claude/Codex 的大写事件配置。官方 `beforeSubmitPrompt` 输出只列出 `continue`、`user_message`，没有本功能所需的上下文追加协议；ponytail 的 Cursor 适配依赖客户端未公开的 `additional_context` 行为，且云端不触发 `sessionStart`。本仓库不据此宣称可靠的会话切换与压缩恢复，也不安装静态常驻规则来假装可以关闭。
 
@@ -197,6 +207,36 @@ codex plugin marketplace remove wstack
 也可以在 `/plugins` 中选择 `wstack` 并卸载。通过 Skills CLI 安装的技能，按 [Skills CLI 卸载步骤](#卸载-skills-cli-安装的技能)处理。
 
 参考：[OpenAI 插件管理](https://learn.chatgpt.com/docs/plugins)、[GitHub marketplace 配置](https://developers.openai.com/plugins/build/plugins#add-a-marketplace-from-the-cli)。
+
+## Antigravity (agy)
+
+### 安装
+
+在终端从 GitHub 仓库或本地目录安装（全局安装到 `~/.gemini/config/plugins/wstack/`，Antigravity CLI、App、IDE 共享）：
+
+```bash
+agy plugin install https://github.com/aidyfeng/wstack
+```
+
+或从本地克隆目录安装：
+
+```bash
+agy plugin install /path/to/wstack
+```
+
+也可在 `agy` 交互会话中执行 `/plugin install https://github.com/aidyfeng/wstack`。只安装到单个项目时，可将插件目录放到项目根目录下的 `.agents/plugins/wstack`。
+
+安装后运行 `agy plugin list` 确认 `wstack` 为 `enabled` 且识别到 22 个 skills 与 1 个 hook；在交互会话中可用 `/hooks` 检查 `wayne-mode` 的 `SessionStart` 与 `PreInvocation` hook，并发送 `/wayne-mode status`（若不想触发 TUI 的 `/` 技能补全菜单，也可像 Codex 一样在前面加一个空格发送 ` /wayne-mode status`）检查会话开关。
+
+### 卸载
+
+```bash
+agy plugin uninstall wstack
+```
+
+或在交互会话中执行 `/plugin uninstall wstack`。
+
+参考：[Antigravity 插件管理](https://antigravity.google/docs/plugins)、[Antigravity Hooks](https://antigravity.google/docs/hooks)。
 
 ## Cursor
 
