@@ -102,6 +102,8 @@ git commit -m "..."             # 自动触发
 
 每条意见标级别。不标级别时，作者会把意见当成同等重量。
 
+多子任务拆分、多模型并行开发或跨模型对抗审查的拓扑、模型路由、实证门槛与 2 轮熔断见 [standard-multi-agent-delivery](../standard-multi-agent-delivery/SKILL.md)，并沿用上面的反馈分级。
+
 ## 自查
 
 1. `pre-commit run --all-files`，修完报出的问题。

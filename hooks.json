@@ -1,0 +1,18 @@
+{
+  "wayne-mode": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 -X utf8 ./hooks/wayne_mode.py agy",
+        "timeout": 5
+      }
+    ],
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python3 -X utf8 ./hooks/wayne_mode.py agy",
+        "timeout": 5
+      }
+    ]
+  }
+}

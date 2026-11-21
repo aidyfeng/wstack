@@ -26,13 +26,20 @@ class HookTests(unittest.TestCase):
             self.state = self.base / 'wstack' / 'wayne-mode'
 
     def call(self, sid='a', prompt='', event='UserPromptSubmit', client='codex', raw=None, script=SCRIPT, **extra):
-        data = {'session_id': sid, 'prompt': prompt, 'hook_event_name': event, **extra}
+        if client == 'agy':
+            hook_event = 'PreInvocation' if event == 'UserPromptSubmit' else event
+            data = {'conversationId': sid, 'lastUserInput': prompt, 'hookEventName': hook_event, **extra}
+        else:
+            data = {'session_id': sid, 'prompt': prompt, 'hook_event_name': event, **extra}
         result = subprocess.run([sys.executable, "-X", "utf8", str(script), client], input=json.dumps(data) if raw is None else raw, text=True, encoding='utf-8', capture_output=True, env=self.env, check=True)
         self.assertEqual(result.stderr, '')
         return json.loads(result.stdout)
 
     def context(self, *args, **kwargs):
-        return self.call(*args, **kwargs)['hookSpecificOutput']['additionalContext']
+        out = self.call(*args, **kwargs)
+        if kwargs.get('client') == 'agy':
+            return out['injectSteps'][0]['systemMessage']['systemMessage']
+        return out['hookSpecificOutput']['additionalContext']
 
     def test_injection_and_snapshots(self):
         text = self.context(event='SessionStart')
@@ -52,8 +59,14 @@ class HookTests(unittest.TestCase):
         self.assertIn('已关闭', self.context(sid='b', prompt='普通消息'))
         self.assertIn('# wayne-mode', self.context(sid='c', event='SessionStart'))
         self.assertIn('# wayne-mode', self.context(client='claude', event='SessionStart'))
+        self.assertIn('# wayne-mode', self.context(client='agy', event='SessionStart'))
+        self.assertIn('当前会话：关闭', self.context(client='agy', prompt='/wayne-mode off'))
+        self.assertIn('已关闭', self.context(client='agy', prompt='普通消息', invocationNum=0))
+        self.assertEqual(self.call(client='agy', prompt='/wayne-mode on', invocationNum=1), {})
+        self.assertIn('当前会话：关闭', self.context(client='agy', prompt='/wayne-mode status'))
+        self.assertIn('# wayne-mode', self.context(client='agy', prompt='/wayne-mode on'))
         for path in (self.state / 'sessions').iterdir():
-            self.assertRegex(path.name, r'^(claude|codex)-[a-f0-9]{64}\.json$')
+            self.assertRegex(path.name, r'^(claude|codex|agy)-[a-f0-9]{64}\.json$')
             self.assertEqual(set(json.loads(path.read_text(encoding='utf-8'))), {'enabled'})
             if os.name != 'nt':
                 self.assertEqual(path.stat().st_mode & 0o077, 0)
@@ -90,10 +103,15 @@ class HookTests(unittest.TestCase):
         shutil.copy(SCRIPT, copied)
         sessions.unlink()
         self.assertIn('systemMessage', self.call(script=copied))
+        self.assertIn('缺少会话标识', self.context(client='agy', sid=None))
+        self.assertIn('读取或保存失败', self.context(client='agy', raw='{'))
+        for bad_inv in (-1, '0', True):
+            self.assertIn('读取或保存失败', self.context(client='agy', invocationNum=bad_inv))
 
     def test_manifest_commands(self):
         plugin = self.base / '插件 copy with spaces'
         shutil.copytree(ROOT / 'hooks', plugin / 'hooks')
+        shutil.copy(ROOT / 'hooks.json', plugin / 'hooks.json')
         shutil.copytree(ROOT / 'skills' / 'wayne-mode', plugin / 'skills' / 'wayne-mode')
         env = dict(self.env, PLUGIN_ROOT=str(plugin), CLAUDE_PLUGIN_ROOT=str(plugin))
         for client in ('claude', 'codex'):
@@ -109,6 +127,15 @@ class HookTests(unittest.TestCase):
             self.assertIn(str(plugin / 'skills/wayne-mode'), context)
             digest = hashlib.sha256(b'manifest').hexdigest()
             self.assertTrue((self.state / 'sessions' / (client + '-' + digest + '.json')).exists())
+        agy_hook = json.loads((plugin / 'hooks.json').read_text(encoding='utf-8'))['wayne-mode']['SessionStart'][0]
+        agy_data = {'conversationId': 'manifest', 'hookEventName': 'SessionStart'}
+        agy_res = subprocess.run(agy_hook['command'], shell=True, input=json.dumps(agy_data), text=True, encoding='utf-8', capture_output=True, cwd=plugin, env=env, check=True)
+        self.assertEqual(agy_res.stderr, '')
+        agy_ctx = json.loads(agy_res.stdout)['injectSteps'][0]['systemMessage']['systemMessage']
+        self.assertIn((plugin / 'skills/wayne-mode/SKILL.md').read_text(encoding='utf-8'), agy_ctx)
+        self.assertIn(str(plugin / 'skills/wayne-mode'), agy_ctx)
+        digest = hashlib.sha256(b'manifest').hexdigest()
+        self.assertTrue((self.state / 'sessions' / ('agy-' + digest + '.json')).exists())
 
     def test_paths_and_manifests(self):
         spec = importlib.util.spec_from_file_location('wayne_mode', SCRIPT)
@@ -119,6 +146,13 @@ class HookTests(unittest.TestCase):
         with patch.object(mod.sys, 'platform', 'win32'), patch.dict(os.environ, {'APPDATA': '/appdata'}):
             self.assertEqual(mod.state_dir(), Path('/appdata/wstack/wayne-mode'))
         self.assertFalse((ROOT / 'plugin.json').exists(), 'Codex CLI 0.170.0 优先读取包根 Agent Plugins 清单，并跳过插件 hook')
+        agy_manifest = json.loads((ROOT / '.antigravity-plugin/plugin.json').read_text(encoding='utf-8'))
+        self.assertEqual(agy_manifest['name'], 'wstack')
+        self.assertEqual(agy_manifest['logo'], 'assets/logo.jpg')
+        agy_hooks = json.loads((ROOT / 'hooks.json').read_text(encoding='utf-8'))['wayne-mode']
+        for event in ('SessionStart', 'PreInvocation'):
+            self.assertEqual(agy_hooks[event][0]['timeout'], 5)
+            self.assertEqual(agy_hooks[event][0]['command'], 'python3 -X utf8 ./hooks/wayne_mode.py agy')
         interface = json.loads((ROOT / '.codex-plugin/plugin.json').read_text(encoding='utf-8'))['interface']
         self.assertEqual(interface['displayName'], 'wstack')
         self.assertEqual(interface['logo'], './assets/logo.jpg')

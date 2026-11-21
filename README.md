@@ -1,16 +1,16 @@
 基于 poteto（Lauren Tan）的 [P Stack（pstack）](https://github.com/cursor/plugins/tree/main/pstack) 封装的个人工程规范插件。P Stack 提供工作流与行为原则，wstack 在此基础上补充领域规范，`skills/wayne-mode` 按 Playbook 决定用哪条规范。登录只在自行托管 cookie 会话时用 `standard-api-security-baseline`；Vercel 或 Supabase 登录不用它。其余规范仍是通用条款，项目路径不在本插件里。
 
-质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。行为按 poteto-mode。本插件不包含 pstack；会话里已有其 `SKILL.md` 就直接用，宣布没有之前先读已安装 pstack 插件里的 `skills/poteto-mode/SKILL.md`，只有读取失败才按 standard skill 继续。
+质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入，多 Agent 协同交付从 [orchestration playbook](skills/wayne-mode/playbooks/orchestration.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。`wayne-mode` 叠在 `poteto-mode` 之上运行，两层同时生效；本插件不包含 pstack，会话里未注入时先查找并读取已安装 pstack 的 `poteto-mode/SKILL.md`，读取失败时降级为仅按本插件规范继续，但无论底层是否可用，命中领域任务都按 `wayne-mode` 路由表叠加对应 standard skill。
 
 ## 安装与卸载
 
 **先在当前客户端安装 P Stack，再安装 wstack。** 本插件不包含或自动安装 P Stack。
 
-完整步骤见 [安装与卸载指南](install.MD)：包含 Claude Code、Codex、Cursor、Grok Build 的安装与卸载，以及其他兼容 Agent 的 Skills CLI 安装方法、个人与项目范围选择和卸载后检查。安装来源统一为 GitHub 仓库 `aidyfeng/wstack`。
+完整步骤见 [安装与卸载指南](install.MD)：包含 Claude Code、Codex、Antigravity (`agy`)、Cursor、Grok Build 的安装与卸载，以及其他兼容 Agent 的 Skills CLI 安装方法、个人与项目范围选择和卸载后检查。安装来源统一为 GitHub 仓库 `aidyfeng/wstack`。
 
 ## wayne-mode 自动启用
 
-Claude Code 和 Codex 插件通过 `SessionStart` 默认开启 wayne-mode，直接注入 [SKILL.md](skills/wayne-mode/SKILL.md) 的实际正文；规则只维护这一份。恢复会话或压缩上下文后，按当前会话状态重新注入。需要 Python 3 在客户端的非交互环境 `PATH` 上，并允许插件运行 hook。
+Claude Code、Codex 和 Antigravity (`agy`) 插件通过 `SessionStart` 默认开启 wayne-mode，直接注入 [SKILL.md](skills/wayne-mode/SKILL.md) 的实际正文；规则只维护这一份。恢复会话或压缩上下文后，按当前会话状态重新注入。需要 Python 3 在客户端的非交互环境 `PATH` 上，并允许插件运行 hook。
 
 | 会话消息 | 效果 |
 | --- | --- |
@@ -20,7 +20,7 @@ Claude Code 和 Codex 插件通过 `SessionStart` 默认开启 wayne-mode，直�
 | `/wayne-mode default on` | 后续新会话默认开启，当前会话不变 |
 | `/wayne-mode default off` | 后续新会话默认关闭，当前会话不变 |
 
-Claude Code 插件使用 `/wstack:wayne-mode on` 等带命名空间的入口。Codex 的输入框会拦截未知斜杠命令，请在上述消息前加一个空格，作为普通消息发送；hook 会识别命令。这里只接受单独一行的控制消息，代码块、解释文字和夹带任务的消息不会改变状态。
+Claude Code 插件使用 `/wstack:wayne-mode on` 等带命名空间的入口。Codex 的输入框会拦截未知斜杠命令，请在上述消息前加一个空格，作为普通消息发送；Antigravity (`agy`) 支持直接发送或加前导空格发送；hook 会识别命令。这里只接受单独一行的控制消息，代码块、解释文字和夹带任务的消息不会改变状态。
 
 Cursor、Grok Build 和仅用 Skills CLI 安装的客户端保留按需技能加载，不注册自动开关。客户端限制、状态路径、故障处理及卸载清理见[开关说明](install.MD#wayne-mode-自动启用与开关)。`off` 停止自动应用本插件规则，无法删除历史上下文，也不会关闭用户、项目或 P Stack 的独立规范。
 
@@ -36,6 +36,7 @@ Cursor、Grok Build 和仅用 Skills CLI 安装的客户端保留按需技能加
 | `standard-frontend-monorepo` | 前端 monorepo：站点、后台、小程序、App 与共享包 |
 | `standard-graph-workflow-editor` | React Flow 图编辑器：草稿/发布与图校验 |
 | `standard-llm-workflow-runtime` | LLM 工作流执行：state、节点注册、SSE |
+| `standard-multi-agent-delivery` | 多 Agent 协同交付：垂直切片拆分、worktree 拓扑、异构模型路由与对抗审查 |
 | `standard-multi-provider-auth` | 大陆多渠道登录：手机号主身份、provider 抽象 |
 | `standard-multitenant-isolation` | 多租户隔离：每条查询带租户过滤 |
 | `standard-payment-integration` | 支付通道：幂等、回调验签、查单对账 |

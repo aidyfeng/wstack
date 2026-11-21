@@ -41,19 +41,46 @@ def write_bool(path, key, value):
             os.unlink(name)
 
 
+def emit(client, event, context=None, warning=None):
+    if client == "agy":
+        text = warning if warning is not None else context
+        out = {"injectSteps": [{"systemMessage": {"systemMessage": text}}]} if text else {}
+    elif warning is not None:
+        out = {"systemMessage": warning}
+    else:
+        out = {"hookSpecificOutput": {"hookEventName": event, "additionalContext": context}}
+    print(json.dumps(out, ensure_ascii=False))
+
+
 def main():
     data = json.load(sys.stdin)
     if not isinstance(data, dict):
         raise ValueError("invalid input")
     client = sys.argv[1]
-    if client not in ("claude", "codex"):
+    if client in ("claude", "codex"):
+        event = data.get("hook_event_name")
+        if event not in ("SessionStart", "UserPromptSubmit"):
+            raise ValueError("invalid event")
+        sid = data.get("session_id")
+        prompt = data.get("prompt", "")
+        is_prompt = event == "UserPromptSubmit"
+    elif client == "agy":
+        event = data.get("hookEventName")
+        if event not in ("SessionStart", "PreInvocation"):
+            raise ValueError("invalid event")
+        inv = data.get("invocationNum", 0)
+        if type(inv) is not int or inv < 0:
+            raise ValueError("invalid invocation")
+        if event == "PreInvocation" and inv > 0:
+            print("{}")
+            return
+        sid = data.get("conversationId")
+        prompt = data.get("lastUserInput", "")
+        is_prompt = event == "PreInvocation"
+    else:
         raise ValueError("invalid client")
-    event = data.get("hook_event_name")
-    if event not in ("SessionStart", "UserPromptSubmit"):
-        raise ValueError("invalid event")
-    sid = data.get("session_id")
     if not isinstance(sid, str) or not sid:
-        print(json.dumps({"systemMessage": "wayne-mode：缺少会话标识，未加载规则。"}, ensure_ascii=False))
+        emit(client, event, warning="wayne-mode：缺少会话标识，未加载规则。")
         return
     root = state_dir()
     config = root / "config.json"
@@ -63,11 +90,10 @@ def main():
     enabled = read_bool(session, "enabled", default)
     if not session.exists():
         write_bool(session, "enabled", enabled)
-    prompt = data.get("prompt", "")
     if not isinstance(prompt, str):
         raise ValueError("invalid prompt")
     command = None
-    if event == "UserPromptSubmit" and "\n" not in prompt and "\r" not in prompt:
+    if is_prompt and "\n" not in prompt and "\r" not in prompt:
         command = re.fullmatch(r"[ \t]*/(?:wstack:)?wayne-mode(?:[ \t]+([^ \t]+))?(?:[ \t]+([^ \t]+))?[ \t]*", prompt)
     control = False
     if command:
@@ -96,11 +122,11 @@ def main():
         context += "\nwayne-mode 技能目录（相对 Playbook 路径以此为基准）：" + str(skill) + "\n" + (skill / "SKILL.md").read_text(encoding="utf-8")
     elif not enabled:
         context += "\nwayne-mode 已关闭：停用此前 hook 注入的 wayne-mode；用户和项目原有规范仍然有效，不要重新启用该技能。"
-    print(json.dumps({"hookSpecificOutput": {"hookEventName": event, "additionalContext": context}}, ensure_ascii=False))
+    emit(client, event, context=context)
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception:
-        print(json.dumps({"systemMessage": "wayne-mode：读取或保存失败，未加载规则，请检查配置。"}, ensure_ascii=False))
+        emit(sys.argv[1] if len(sys.argv) > 1 else "", "", warning="wayne-mode：读取或保存失败，未加载规则，请检查配置。")
