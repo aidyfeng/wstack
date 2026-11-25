@@ -16,9 +16,9 @@ description: >-
 2. 否则，在当前客户端已安装的 pstack 插件或 skills 目录中查找并读取 `poteto-mode/SKILL.md`（不限于与 `setup-pstack` 严格同级），读到后作为底层行为规范启用。
 3. 只有确认查找和读取都失败，才说明当前会话没有 `poteto-mode`，降级为仅按本插件规范继续。
 
-## 2. 编辑前确认独立 worktree
+## 2. 编辑前确认分支与工作目录
 
-每个会修改项目代码的任务或子任务，第一次编辑前都必须确认执行会话已绑定该任务专用的独立 Git worktree。单人、小改和强耦合任务同样适用。只读调研和评审可复用已有目录，转为写代码时先完成绑定核验。主会话直做、派发子任务和 pstack 工作流均按 [orchestration](playbooks/orchestration.md) 执行。
+第一次编辑前确认执行会话所在分支。从仓库默认分支开始开发时，先创建独立 Git worktree 并绑定执行会话。已在适合本任务的非默认分支上开发时，可以继续使用当前目录。独立切片并行写入时分别使用独立 worktree。只读调研和评审可复用已有目录，转为开发时再按分支判断。主会话直做、派发子任务和 pstack 工作流均按 [orchestration](playbooks/orchestration.md) 执行。
 
 ## 3. 始终按本表叠加领域规范
 
