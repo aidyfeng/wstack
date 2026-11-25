@@ -46,7 +46,7 @@ BREAKING CHANGE: 旧的会话记录在升级后失效，用户需重新登录
 
 1. 理解现象，核实根因。能复现时先复现。
 2. 评估方案、副作用和本次授权范围。关键事实缺失时先询问。
-3. 在已授权范围内改。项目明确要求额外批准时遵守该约定。
+3. 按 [orchestration playbook](../wayne-mode/playbooks/orchestration.md) 核实执行会话已绑定本任务的独立 worktree，再在授权范围内修改。项目明确要求额外批准时遵守该约定。
 4. 按改动范围验证，并报告结果。
 
 验证范围、执行时机和行为证据按 [quality playbook](../wayne-mode/playbooks/quality.md)。已有测试契约随行为变化更新；测试原则及 pstack 可用性按 [standard-quality-gates](../standard-quality-gates/SKILL.md)。

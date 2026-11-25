@@ -3,7 +3,7 @@ name: wayne-mode
 description: >-
   ZHIRONG 的工作方式。行为按当前会话的 poteto-mode，领域规范按 wstack 的 standard skill。
   用户提到 ZHIRONG、/wayne-mode，或要求按他的方式做事时使用。
-  做登录、网页或 App、支付、多租户、用户编排的工作流、Celery、Redis、数据库建模、项目结构、质量门，或拆分大任务、多模型并行开发、worktree 协同、跨模型对抗审查时也先读本技能，按 playbooks/ 选。
+  修改项目代码、做登录、网页或 App、支付、多租户、用户编排的工作流、Celery、Redis、数据库建模、项目结构、质量门，或拆分大任务、多模型并行开发、跨模型对抗审查时也先读本技能，按 playbooks/ 选。
 ---
 
 # wayne-mode
@@ -16,7 +16,11 @@ description: >-
 2. 否则，在当前客户端已安装的 pstack 插件或 skills 目录中查找并读取 `poteto-mode/SKILL.md`（不限于与 `setup-pstack` 严格同级），读到后作为底层行为规范启用。
 3. 只有确认查找和读取都失败，才说明当前会话没有 `poteto-mode`，降级为仅按本插件规范继续。
 
-## 2. 始终按本表叠加领域规范
+## 2. 编辑前确认独立 worktree
+
+每个会修改项目代码的任务或子任务，第一次编辑前都必须确认执行会话已绑定该任务专用的独立 Git worktree。单人、小改和强耦合任务同样适用。只读调研和评审可复用已有目录，转为写代码时先完成绑定核验。主会话直做、派发子任务和 pstack 工作流均按 [orchestration](playbooks/orchestration.md) 执行。
+
+## 3. 始终按本表叠加领域规范
 
 无论底层 `poteto-mode` 是否可用，都要先查下表。命中任务就先读对应 Playbook，再打开它点名的 `standard-*` 技能，把约束叠加到当前任务上。适用性只在这里定，各 standard skill 只写做法。
 
@@ -32,7 +36,7 @@ description: >-
 | 表、列、迁移、Repository | [persistence](playbooks/persistence.md) |
 | 仓库目录、模块分层、包边界 | [structure](playbooks/structure.md) |
 | lint、类型检查、CI 门禁、验证范围与交付证据 | [quality](playbooks/quality.md) |
-| 拆分大任务、多模型并行开发、worktree 协同、跨模型对抗审查 | [orchestration](playbooks/orchestration.md) |
+| 开发任务隔离、拆分大任务、多模型并行开发、跨模型对抗审查 | [orchestration](playbooks/orchestration.md) |
 | WebSocket 频道、心跳、多进程广播 | `standard-websocket-realtime` |
 | 爬虫 | `standard-web-crawler` |
 | 提交说明、pre-commit、评审 | `standard-dev-workflow` |

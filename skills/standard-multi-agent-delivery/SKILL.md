@@ -1,12 +1,20 @@
 ---
 name: standard-multi-agent-delivery
 description: >
-  多 Agent 协同交付与任务编排：把大任务按用户可见操作拆成子任务、派给不同模型在 worktree 并行开发、总控初审、跨模型对抗审查或提 PR 合并时使用。
+  开发任务隔离与多 Agent 协同交付。编辑前核实任务绑定的独立 worktree，按用户可见操作拆分大任务，按需并行开发、审查、回归与提 PR。
 ---
 
-# 多 Agent 协同交付
+# 开发任务隔离与多 Agent 协同交付
 
 本规范定义总控 Agent 拆分任务、隔离开发、分层路由模型、执行双层审查与合入的通用做法。触发时机与流程入口见 [orchestration playbook](../wayne-mode/playbooks/orchestration.md)；验证证据与提交评审分级分别衔接 [standard-quality-gates](../standard-quality-gates/SKILL.md) 和 [standard-dev-workflow](../standard-dev-workflow/SKILL.md)。
+
+## 编辑前核验 worktree 绑定
+
+1. 为每个会修改项目代码的任务分配专用的独立 Git worktree。独立可交付切片各用一个 worktree。强耦合内容由同一开发者在同一个专用 worktree 实现。单人和小改也按此执行。
+2. 用客户端的工作区绑定功能把执行会话绑定到该 worktree。派发入口默认共享目录时，显式请求独立 worktree。会话已绑定本任务的专用 worktree 时可复用。
+3. 第一次编辑前，执行者在自己的会话运行 `git rev-parse --show-toplevel`、`git branch --show-current` 和 `git worktree list --porcelain`。核对 checkout 根目录与分支对应本任务分配的 worktree，且该目录独立于仓库原目录和其他开发任务。原目录里运行 `git switch` 只会更换分支。只用于测试或尚未绑定执行会话的 worktree 也不满足开发前提。
+
+只读调研和评审可以复用已有目录，需要改代码时先完成上述绑定和核验。
 
 ## 拆分规则
 
@@ -30,10 +38,10 @@ description: >
 
 | 当前状态与目标 | 拓扑模式 | 隔离与合入方式 |
 | --- | --- | --- |
-| 位于默认主干，多个垂直切片独立且各自提 PR | **主干扇出（Trunk Fan-out）** | 各切片从主干切独立 worktree，审查通过后各自提向主干的 PR |
+| 位于默认主干，多个垂直切片独立且各自提 PR | **主干扇出（Trunk Fan-out）** | 各切片从主干切独立 worktree。总控分别验证对应集成分支，再向主干提 PR |
 | 位于自建特性分支 / worktree，最终合并为这一个 PR | **分支内回流（Feature Fan-in）** | 先将未提交改动提交为 checkpoint commit；各切片从当前 `HEAD` 切独立 worktree；初审与对抗审查以 `checkpoint..subtask-head` 为范围；通过后回流合入当前特性分支，统一跑集成验证再提 PR |
 | 位于自建特性分支，当前分支已够大准备先提上游 PR，需继续推进依赖切片 | **栈式扩展（Stacked PR）** | 子切片从当前特性分支 `HEAD` 切 worktree，通过后提 PR 且 base 指向父分支；父 PR 合入后将子 PR retarget 到主干并 rebase，用 `git patch-id` 核验原审查结论是否继续有效 |
-| 改动集中于少量强耦合文件，或拆不出独立用户路径 | **单 Owner 直做（Single Owner）** | 不强拆多 worktree，直接在当前 worktree 完成实现；只将只读调研与最终跨模型对抗审查派给外部模型 |
+| 单人、小改、强耦合，或拆不出独立用户路径 | **单 Owner 直做（Single Owner）** | 同一开发者在执行会话已绑定的任务专用 worktree 内完成实现。可派发只读调研与最终跨模型对抗审查 |
 
 在分支内回流模式下，未提交的工作区改动不会自动进入新切出的子 worktree，因此**先建立 checkpoint commit 再扇出**是硬前提。
 
@@ -101,10 +109,10 @@ description: >
 
 ## 整体闭环与合入门禁
 
-单个子任务各自通过不等于整体流程正常。最终合入或提 PR 前必须同时满足：
+总控从开发 worktree 收回切片提交，在对应集成分支跑回归，通过后创建 PR。独立或栈式 PR 按各自的目标分支和依赖关系组织交付。
 
-1. **端到端主流程验证。** 所有垂直切片回流或集成后，从真实用户或调用方入口走通跨切片主流程，证据要求按 [standard-quality-gates](../standard-quality-gates/SKILL.md)。
-2. **审查与 CI 全绿。** 无未解决的 `[Blocker]` / `[Major]`，CI 必需检查全部通过且无冲突。
+1. **端到端主流程验证。** 提 PR 前，从真实用户或调用方入口走通集成后的主流程，证据要求按 [standard-quality-gates](../standard-quality-gates/SKILL.md)。
+2. **审查与 CI 全绿。** 合入前解决全部 `[Blocker]`、`[Major]` 与合并冲突，确认必需的 CI 检查通过。
 3. **提交绑定。** 审查与验证结论绑定当前待合入 `HEAD`。仅因同步基线发生 rebase 时，比对 `git patch-id`：补丁未变可沿用行为结论并补齐新 `HEAD` 的 CI；补丁有变化则重新验证受影响范围。
 
 ## pstack 外部技能映射
