@@ -1,6 +1,6 @@
 基于 poteto（Lauren Tan）的 [P Stack（pstack）](https://github.com/cursor/plugins/tree/main/pstack) 封装的个人工程规范插件。P Stack 提供工作流与行为原则，wstack 在此基础上补充领域规范，`skills/wayne-mode` 按 Playbook 决定用哪条规范。登录只在自行托管 cookie 会话时用 `standard-api-security-baseline`；Vercel 或 Supabase 登录不用它。其余规范仍是通用条款，项目路径不在本插件里。
 
-质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入，多 Agent 协同交付从 [orchestration playbook](skills/wayne-mode/playbooks/orchestration.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。`wayne-mode` 叠在 `poteto-mode` 之上运行，两层同时生效；本插件不包含 pstack，会话里未注入时先查找并读取已安装 pstack 的 `poteto-mode/SKILL.md`，读取失败时降级为仅按本插件规范继续，但无论底层是否可用，命中领域任务都按 `wayne-mode` 路由表叠加对应 standard skill。
+质量门与验证从 [quality playbook](skills/wayne-mode/playbooks/quality.md) 进入，开发任务隔离与多 Agent 协同交付从 [orchestration playbook](skills/wayne-mode/playbooks/orchestration.md) 进入。wstack 保存通用通过条件，项目保存检查命令和真实应用验证入口。`wayne-mode` 叠在 `poteto-mode` 之上运行，两层同时生效；本插件不包含 pstack，会话里未注入时先查找并读取已安装 pstack 的 `poteto-mode/SKILL.md`，读取失败时降级为仅按本插件规范继续，但无论底层是否可用，命中领域任务都按 `wayne-mode` 路由表叠加对应 standard skill。
 
 ## 安装与卸载
 
@@ -36,7 +36,7 @@ Cursor、Grok Build 和仅用 Skills CLI 安装的客户端保留按需技能加
 | `standard-frontend-monorepo` | 前端 monorepo：站点、后台、小程序、App 与共享包 |
 | `standard-graph-workflow-editor` | React Flow 图编辑器：草稿/发布与图校验 |
 | `standard-llm-workflow-runtime` | LLM 工作流执行：state、节点注册、SSE |
-| `standard-multi-agent-delivery` | 多 Agent 协同交付：垂直切片拆分、worktree 拓扑、异构模型路由与对抗审查 |
+| `standard-multi-agent-delivery` | 开发任务隔离、垂直切片拆分、worktree 拓扑、异构模型路由与对抗审查 |
 | `standard-multi-provider-auth` | 大陆多渠道登录：手机号主身份、provider 抽象 |
 | `standard-multitenant-isolation` | 多租户隔离：每条查询带租户过滤 |
 | `standard-payment-integration` | 支付通道：幂等、回调验签、查单对账 |
